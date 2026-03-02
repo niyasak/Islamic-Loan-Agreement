@@ -28,12 +28,16 @@ body{
 }
 .title{
    text-align:center;
-   font-size:24px;
+   font-size:26px;
    font-weight:600;
    margin-bottom:25px;
 }
-.title span{
-   color:#c8a951;
+.title span{ color:#c8a951; }
+label{
+   font-size:13px;
+   margin-bottom:5px;
+   display:block;
+   opacity:0.9;
 }
 input,textarea,select{
    width:100%;
@@ -42,12 +46,12 @@ input,textarea,select{
    border-radius:12px;
    border:none;
    outline:none;
-   background:rgba(255,255,255,0.9);
+   background:rgba(255,255,255,0.95);
 }
 input:focus,textarea:focus{
    box-shadow:0 0 0 3px rgba(200,169,81,0.6);
 }
-textarea{height:80px;resize:none;}
+textarea{ height:80px; resize:none; }
 .btn{
    width:100%;
    padding:12px;
@@ -58,12 +62,12 @@ textarea{height:80px;resize:none;}
    cursor:pointer;
    transition:0.3s;
 }
-.btn-primary{background:#198754;color:white;}
-.btn-primary:hover{background:#14532d;}
-.btn-gold{background:#c8a951;color:#0f5132;}
-.btn-gold:hover{background:#d4b76d;}
-.btn-blue{background:#1565c0;color:white;}
-.btn-blue:hover{background:#0d47a1;}
+.btn-primary{ background:#198754; color:white; }
+.btn-primary:hover{ background:#14532d; }
+.btn-blue{ background:#1565c0; color:white; }
+.btn-blue:hover{ background:#0d47a1; }
+.btn-gold{ background:#c8a951; color:#0f5132; }
+.btn-gold:hover{ background:#d4b76d; }
 .preview{
    margin-top:25px;
    background:white;
@@ -96,17 +100,24 @@ textarea{height:80px;resize:none;}
 <div class="container">
 <div class="title">🌿 <span>Islamic Loan Agreement</span></div>
 <div id="formSection">
+<label>Select Your Role</label>
 <select id="role">
-<option value="">Select Your Role</option>
+<option value="">Choose Role</option>
 <option value="Lender">Lender</option>
 <option value="Borrower">Borrower</option>
 </select>
-<input id="lender" placeholder="Lender Name (Full Name As Per Aadhaar)">
-<input id="borrower" placeholder="Borrower Name (Full Name As Per Aadhaar)	">
-<input id="amount" placeholder="Loan Amount (₹)">
+<label>Lender Name</label>
+<input id="lender" placeholder="Full Name">
+<label>Borrower Name</label>
+<input id="borrower" placeholder="Full Name">
+<label>Loan Amount (₹)</label>
+<input id="amount" type="number">
+<label>Repayment Due Date</label>
 <input id="due" type="date">
-<input id="location" placeholder="Location (City, State, Country)">
-<textarea id="notes" placeholder="Optional Notes"></textarea>
+<label>Place of Agreement</label>
+<input id="location" placeholder="City, State, Country">
+<label>Optional Notes</label>
+<textarea id="notes"></textarea>
 <button class="btn btn-primary" onclick="generateLink()">Generate & Create Shareable Link</button>
 <button class="btn btn-blue" onclick="copyLink()">Copy Share Link</button>
 </div>
@@ -123,7 +134,7 @@ I confirm that I agree to the above loan terms.
 <div class="status" id="status"></div>
 <div class="preview" id="preview" style="display:none;"></div>
 <div class="footer">
-Based on Qur'an 2:282 • Electronic agreement valid under Indian IT Act
+“O you who believe, when you contract a debt for a fixed period, write it down...” — Qur'an 2:282
 </div>
 </div>
 <script>
@@ -145,8 +156,7 @@ created:new Date().toLocaleString()
 let encoded=btoa(JSON.stringify(agreementData));
 shareLink=window.location.origin+window.location.pathname+"?data="+encoded;
 document.getElementById("preview").style.display="block";
-document.getElementById("preview").innerText=
-"Share this link with the other party:\n\n"+shareLink;
+document.getElementById("preview").innerText="Share this link with the other party:\n\n"+shareLink;
 }
 function copyLink(){
 if(!shareLink){alert("Generate link first.");return;}
@@ -168,13 +178,14 @@ showAgreement();
 function showAgreement(){
 let text=
 `ISLAMIC LOAN AGREEMENT
-Executed at: ${agreementData.location}
-On: ${agreementData.created}
+Place of Agreement: ${agreementData.location}
+Date: ${agreementData.created}
 Lender: ${agreementData.lender}
 Borrower: ${agreementData.borrower}
 Loan Amount: ₹ ${agreementData.amount}
 Repayment Due Date: ${agreementData.due}
 This loan is free from interest (Riba).
+The borrower solemnly acknowledges that this debt is a sacred trust (Amanah) and a binding obligation before Allah. Repayment must be made on or before the agreed due date, as unjustified delay in repayment is regarded as oppression (zulm). The borrower understands that debts remain accountable on the Day of Judgment and will be subject to Hisab (divine reckoning), and therefore commits to fulfilling this responsibility with sincerity, honesty, and full God-consciousness (Taqwa).
 Notes:
 ${agreementData.notes}
 `;
@@ -211,65 +222,21 @@ const { jsPDF }=window.jspdf;
 const doc=new jsPDF();
 let w=doc.internal.pageSize.getWidth();
 let h=doc.internal.pageSize.getHeight();
-/* Elegant Gold Frame */
 doc.setDrawColor(200,169,81);
 doc.setLineWidth(4);
 doc.rect(10,10,w-20,h-20);
 doc.setLineWidth(1);
 doc.rect(20,20,w-40,h-40);
-/* Title */
 doc.setFont("times","bold");
-doc.setFontSize(20);
+doc.setFontSize(18);
 doc.text("ISLAMIC LOAN AGREEMENT",w/2,35,{align:"center"});
-/* Quran Reference */
-doc.setFontSize(11);
-doc.setFont("times","italic");
-doc.text('"O you who believe, when you contract a debt for a fixed period, write it down..."',
-w/2,45,{align:"center"});
-doc.text("— Qur'an 2:282",w/2,52,{align:"center"});
-/* Body */
 doc.setFont("times","normal");
 doc.setFontSize(12);
-let content=`
-Agreement ID: ${agreementData.id}
-Place of Agreement: ${agreementData.location}
-Date: ${agreementData.created}
---------------------------------------------
-PARTIES
-Lender: ${agreementData.lender}
-Borrower: ${agreementData.borrower}
---------------------------------------------
-LOAN TERMS
-Loan Amount: ₹ ${agreementData.amount}
-
-Repayment Due Date: ${agreementData.due}
-
-This loan is completely free from interest (Riba). The borrower solemnly acknowledges that this debt is a trust (Amanah)
-and a serious obligation before Allah. The borrower understands that debts remain accountable on the Day of Judgment, 
-and every obligation will be subject to Hisab (divine accountability). Repayment must be made on or before the due date.
---------------------------------------------
-Additional Notes:
-${agreementData.notes}
-`;
-if(accepted){
-content+=`
---------------------------------------------
-ACCEPTANCE
-Accepted By: ${agreementData.acceptedBy}
-Accepted On: ${agreementData.acceptedOn}
-Electronic agreement valid under Indian IT Act.
-`;
-}
+let content=document.getElementById("preview").innerText;
 let lines=doc.splitTextToSize(content,w-60);
-doc.text(lines,30,65);
-/* Signature Section */
-doc.line(40,h-60,100,h-60);
-doc.line(w-100,h-60,w-40,h-60);
-doc.text("Lender Signature",40,h-52);
-doc.text("Borrower Signature",w-100,h-52);
+doc.text(lines,30,55);
 doc.save("Islamic_Loan_Agreement_"+agreementData.id+".pdf");
 }
-
 </script>
 </body>
 </html>
